@@ -1,38 +1,35 @@
 # CineScope — Movie Discovery & Wishlist Platform
 
-CineScope is a full-stack movie discovery application built with **React, Node.js, Express, PostgreSQL, and the TMDB API**.
+CineScope is a full-stack movie discovery application built with **React, Node.js, Express, PostgreSQL, Docker Compose, and the TMDB API**.
 
-The application allows users to discover movies, search for movies, filter and sort results, view detailed movie information, and maintain a persistent wishlist.
+The application allows users to discover movies, search for movies, filter and sort results, view movie details, and maintain a persistent wishlist.
 
-The project follows a **modular monolith architecture**. The React frontend communicates only with the CineScope backend, while the backend is responsible for communicating with TMDB and PostgreSQL.
+The project uses a **modular monolith architecture**. The React frontend communicates only with the CineScope backend. The backend handles TMDB communication and PostgreSQL persistence.
 
 ---
 
-## 1. Assignment Overview
+## 1. Project Overview
 
 ### Objective
 
-The objective of CineScope is to build a movie discovery application that demonstrates:
+The project demonstrates:
 
 - React frontend development
 - Node.js and Express backend development
+- REST API design
 - Third-party API integration
-- Persistent database storage
+- PostgreSQL persistence
 - Movie discovery and search
 - Filtering and sorting
-- Pagination for large result sets
+- Pagination
 - Movie details
 - Persistent wishlist functionality
 - Loading, empty, and error states
-- Responsive UI design
-- Maintainable application architecture
-- Handling of external API failures and slow responses
+- Responsive UI
+- External API reliability handling
+- Maintainable application structure
 
-### Important Requirement
-
-The frontend must **not call TMDB directly**.
-
-All movie-related requests flow through the CineScope backend.
+### Core Architecture
 
 ```text
 User
@@ -42,142 +39,19 @@ React Frontend
  |
  | REST / JSON
  v
-CineScope Backend
- |
- | TMDB API
- v
-TMDB
+Node.js + Express
+ |             |
+ v             v
+PostgreSQL    TMDB API
 ```
 
-This keeps the TMDB access token on the backend and prevents the frontend from being tightly coupled to the external API.
+The frontend never communicates directly with TMDB.
 
 ---
 
-# 2. Requirements and Completion Status
+## 2. Architecture
 
-| Requirement | Status |
-|---|---|
-| React frontend | Completed |
-| Node.js backend | Completed |
-| Express REST API | Completed |
-| TMDB integration | Completed |
-| Backend API abstraction | Completed |
-| Movie discovery | Completed |
-| Movie search | Completed |
-| Genre filtering | Completed |
-| Year filtering | Completed |
-| Sorting | Completed |
-| Pagination | Completed |
-| Movie details | Completed |
-| Wishlist | Completed |
-| Persistent wishlist | Completed |
-| Duplicate prevention | Completed |
-| Navigation | Completed |
-| Loading states | Completed |
-| Empty states | Completed |
-| Error states | Completed |
-| Responsive design | Completed |
-| PostgreSQL | Completed |
-| Docker Compose database | Completed |
-| Timeout handling | Completed |
-| Transient retry handling | Completed |
-| Documentation | Completed |
-
----
-
-# 3. Features
-
-## Movie Discovery
-
-Users can browse movies retrieved through the backend.
-
-Movie cards provide relevant information including:
-
-- Poster
-- Title
-- Release date/year
-- Rating
-- Vote count where available
-
-## Search
-
-Users can search for movies by title/query.
-
-Example:
-
-```text
-Batman
-```
-
-Search requests are sent to the backend:
-
-```http
-GET /api/movies/search?q=batman&page=1
-```
-
-## Filtering
-
-Movies can be filtered by:
-
-- Genre
-- Release year
-
-## Sorting
-
-Movie results can be sorted using supported movie attributes such as:
-
-- Rating
-- Release date
-- Popularity/relevance
-
-## Pagination
-
-Movie results are paginated instead of loading the entire result set at once.
-
-## Movie Details
-
-Users can open a movie to view:
-
-- Title
-- Poster
-- Backdrop
-- Overview
-- Release date
-- Rating
-- Vote count
-
-## Wishlist
-
-Users can:
-
-- Add movies
-- Remove movies
-- View saved movies
-- Persist wishlist data
-- Avoid duplicate entries
-
-## Navigation
-
-The application provides navigation between:
-
-- Discover
-- Search
-- Movie Details
-- Wishlist
-
-## Responsive UI
-
-The UI adapts to:
-
-- Desktop
-- Tablet
-- Mobile
-
----
-
-# 4. High-Level Architecture
-
-CineScope uses a **three-tier application architecture** with a modular backend.
+CineScope follows a three-tier architecture with a layered backend.
 
 ```text
                          +----------------+
@@ -201,11 +75,11 @@ CineScope uses a **three-tier application architecture** with a modular backend.
               |       Node.js + Express Backend       |
               |                                       |
               | Routes                                |
-              |     ↓                                 |
+              |   ↓                                   |
               | Controllers                           |
-              |     ↓                                 |
+              |   ↓                                   |
               | Services                              |
-              |     ↓                  ↓              |
+              |   ↓                  ↓                |
               | PostgreSQL        TMDB Client         |
               +------+------------------+--------------+
                      |                  |
@@ -218,11 +92,25 @@ CineScope uses a **three-tier application architecture** with a modular backend.
               +-------------+     +-----------+
 ```
 
+### Why this architecture?
+
+A modular monolith is appropriate for the current assignment because it provides:
+
+- Clear separation of responsibilities
+- Simple local development
+- Simple deployment
+- Low infrastructure complexity
+- Easier debugging
+- Easier testing
+- A path to future scaling
+
+Microservices, Kafka, Kubernetes, or other distributed infrastructure are not necessary for the current scope.
+
 ---
 
-# 5. System Design
+## 3. System Design
 
-The backend is organized as a **modular monolith**.
+The backend is organized into logical modules while remaining one deployable application.
 
 ```text
                     CineScope Backend
@@ -230,7 +118,7 @@ The backend is organized as a **modular monolith**.
              +-------------+-------------+
              |                           |
              v                           v
-       Movie Module                Wishlist Module
+        Movie Module                Wishlist Module
              |                           |
        +-----+------+               +----+-----+
        |            |               |          |
@@ -241,78 +129,36 @@ The backend is organized as a **modular monolith**.
               TMDB Client                  PostgreSQL
 ```
 
-The application remains one deployable backend while separating responsibilities into modules.
-
-### Why this architecture?
-
-A microservice architecture would add unnecessary complexity for the current scope.
-
-The modular monolith provides:
-
-- Clear separation of concerns
-- Simple development
-- Simple deployment
-- Easier debugging
-- Easier testing
-- Lower infrastructure requirements
-- A path to future service extraction
-
-Technologies such as Kafka, Kubernetes, or multiple independent services are not required for the current application.
-
----
-
-# 6. Frontend Architecture
+### Backend request pattern
 
 ```text
-frontend/src/
-|
-+-- components/
-|   +-- MovieCard
-|   +-- MovieGrid
-|   +-- SearchBar
-|   +-- FilterBar
-|   +-- SortSelector
-|   +-- LoadingSkeleton
-|   +-- EmptyState
-|   +-- ErrorState
-|
-+-- pages/
-|   +-- Home
-|   +-- Search
-|   +-- MovieDetails
-|   +-- Wishlist
-|
-+-- services/
-|   +-- api.js
-|
-+-- hooks/
-+-- context/
-+-- utils/
-|
-+-- App.jsx
-+-- App.css
-+-- main.jsx
+HTTP Request
+     |
+     v
+Route
+     |
+     v
+Controller
+     |
+     v
+Service
+     |
+     +---------> PostgreSQL
+     |
+     +---------> TMDB Client
+     |
+     v
+Normalized Response
+     |
+     v
+HTTP Response
 ```
 
-### Frontend Responsibilities
-
-The frontend is responsible for:
-
-- Rendering the UI
-- Managing UI state
-- Handling user interactions
-- Calling backend APIs
-- Displaying loading states
-- Displaying empty states
-- Displaying errors
-- Navigation
-- Responsive presentation
-
-The frontend does not contain the TMDB access token.
+This structure keeps HTTP handling, business logic, persistence, and external API integration separate.
 
 ---
 
-# 7. Backend Architecture
+## 4. Backend Architecture
 
 ```text
 backend/src/
@@ -351,111 +197,225 @@ backend/src/
 +-- app.js
 ```
 
+### Layer responsibilities
+
+**Routes**
+
+Define the HTTP endpoints.
+
+**Controllers**
+
+Handle HTTP requests and responses.
+
+**Services**
+
+Contain application and business logic.
+
+**TMDB Client**
+
+Handles communication with the external movie API.
+
+**Database Layer**
+
+Handles PostgreSQL connectivity and persistence.
+
+**Middleware**
+
+Provides shared validation and error-handling behavior.
+
 ---
 
-# 8. Backend Layer Responsibilities
-
-## Routes
-
-Routes define the public API endpoints.
+## 5. Frontend Architecture
 
 ```text
-GET    /api/health
-GET    /api/movies
-GET    /api/movies/search
-GET    /api/movies/:id
-GET    /api/wishlist
-POST   /api/wishlist
-DELETE /api/wishlist/:movieId
+frontend/src/
+|
++-- components/
+|   +-- MovieCard
+|   +-- MovieGrid
+|   +-- SearchBar
+|   +-- FilterBar
+|   +-- SortSelector
+|   +-- LoadingSkeleton
+|   +-- EmptyState
+|   +-- ErrorState
+|
++-- pages/
+|   +-- Home
+|   +-- Search
+|   +-- MovieDetails
+|   +-- Wishlist
+|
++-- services/
+|   +-- api.js
+|
++-- hooks/
++-- context/
++-- utils/
+|
++-- App.jsx
++-- App.css
++-- main.jsx
 ```
 
-## Controllers
+### Frontend responsibilities
 
-Controllers handle HTTP-specific responsibilities:
+The frontend handles:
 
-- Read request parameters
-- Validate input
-- Call services
-- Return HTTP responses
+- UI rendering
+- User interaction
+- Navigation
+- UI state
+- API calls to the CineScope backend
+- Loading states
+- Empty states
+- Error states
+- Responsive presentation
 
-Business logic is kept in the service layer.
-
-## Services
-
-Services contain application/business logic.
-
-### Movie Service
-
-Responsible for:
-
-- Movie discovery
-- Search
-- Filters
-- Sorting
-- Pagination
-- Movie details
-- Movie data normalization
-
-### Wishlist Service
-
-Responsible for:
-
-- Add movie
-- Remove movie
-- Get wishlist
-- Duplicate prevention
-- Database persistence
-- Wishlist fallback behavior
-
-## TMDB Client
-
-The TMDB client centralizes:
-
-- TMDB base URL
-- Authentication
-- HTTP requests
-- Timeout handling
-- Error handling
-- Limited transient retries
+The frontend does **not** contain the TMDB access token.
 
 ---
 
-# 9. External API Abstraction
+## 6. Request and Data Flow
 
-The frontend communicates only with the CineScope API.
+### Movie Discovery
 
 ```text
-React
+User
  |
- | GET /api/movies
- | GET /api/movies/search
- | GET /api/movies/:id
  v
-CineScope Backend
+Home Page
+ |
+ v
+GET /api/movies
+ |
+ v
+Movie Route
+ |
+ v
+Movie Controller
+ |
+ v
+Movie Service
  |
  v
 TMDB Client
  |
  v
 TMDB API
+ |
+ v
+Normalize Movie Data
+ |
+ v
+React Movie Grid
 ```
 
-The frontend does not need to know:
+### Search
 
-- TMDB API URLs
-- TMDB authentication
-- TMDB access token
-- TMDB raw response format
+```text
+User enters "Batman"
+ |
+ v
+Search Bar
+ |
+ v
+Frontend API Client
+ |
+ v
+GET /api/movies/search?q=batman&page=1
+ |
+ v
+Backend
+ |
+ v
+TMDB Search API
+ |
+ v
+Normalized Results
+ |
+ v
+Search Results
+```
 
-This provides a clean application API contract.
+### Movie Details
 
-It also makes changing the movie provider easier in the future.
+```text
+User selects movie
+ |
+ v
+Movie Details Page
+ |
+ v
+GET /api/movies/:id
+ |
+ v
+Backend
+ |
+ v
+TMDB
+ |
+ v
+Normalized Movie
+ |
+ v
+Details Page
+```
+
+### Wishlist
+
+```text
+User
+ |
+ v
+React
+ |
+ v
+POST /api/wishlist
+ |
+ v
+Wishlist Controller
+ |
+ v
+Wishlist Service
+ |
+ v
+PostgreSQL
+ |
+ v
+Persistent Wishlist
+```
 
 ---
 
-# 10. Movie Data Model
+## 7. External API Abstraction
 
-TMDB responses are normalized into an application-level model:
+The frontend does not call TMDB directly.
+
+```text
+React
+ |
+ | CineScope REST API
+ v
+CineScope Backend
+ |
+ | TMDB Client
+ v
+TMDB
+```
+
+This abstraction provides several benefits:
+
+- Keeps TMDB credentials on the server
+- Prevents frontend coupling to TMDB
+- Provides a stable application API
+- Allows response normalization
+- Centralizes timeout and retry behavior
+- Makes future provider changes easier
+
+### Normalized movie model
+
+The backend exposes an application-level movie object:
 
 ```javascript
 {
@@ -470,11 +430,11 @@ TMDB responses are normalized into an application-level model:
 }
 ```
 
-The frontend therefore depends on the CineScope movie model rather than directly depending on TMDB's response structure.
+The frontend therefore depends on CineScope's model instead of TMDB's raw response structure.
 
 ---
 
-# 11. Database Design
+## 8. Database Design
 
 PostgreSQL is used for persistent application data.
 
@@ -500,38 +460,19 @@ PostgreSQL is used for persistent application data.
 +----------------------+
 ```
 
-The wishlist is stored in PostgreSQL so that it survives application and backend restarts.
+The wishlist is stored in PostgreSQL so that it survives:
+
+- Browser refreshes
+- Backend restarts
+- Application restarts
+
+### Persistence flow
 
 ```text
-Browser Refresh
-      |
-      v
-Backend Restart
-      |
-      v
-PostgreSQL
-      |
-      v
-Wishlist remains persisted
-```
-
----
-
-# 12. Wishlist Design
-
-Authentication was not required by the assignment, so the current implementation uses a simple default-user model.
-
-### Add Movie
-
-```text
-User
- |
- v
 React
  |
- | POST /api/wishlist
  v
-Wishlist Controller
+Express
  |
  v
 Wishlist Service
@@ -540,63 +481,12 @@ Wishlist Service
 PostgreSQL
  |
  v
-Saved Movie
-```
-
-### Remove Movie
-
-```text
-User
- |
- v
-React
- |
- | DELETE /api/wishlist/:movieId
- v
-Wishlist Service
- |
- v
-PostgreSQL
- |
- v
-Movie Removed
-```
-
-### Duplicate Prevention
-
-The backend checks whether the movie is already saved for the current/default user.
-
-```text
-Not saved
-    ↓
-Add to Wishlist
-
-Already saved
-    ↓
-Remove from Wishlist
+Saved Wishlist
 ```
 
 ---
 
-# 13. Wishlist Data Enrichment
-
-Wishlist records contain basic movie information.
-
-When displaying saved movies, the backend can retrieve current movie details through the existing movie service.
-
-The wishlist can therefore display:
-
-- Movie title
-- Poster
-- Release year
-- Rating
-- Vote count
-
-If an individual TMDB detail request fails, stored PostgreSQL information can be used as fallback data rather than failing the entire wishlist response.
-
----
-
-# 14. API Documentation
+## 9. API Design
 
 Base URL:
 
@@ -604,241 +494,150 @@ Base URL:
 http://localhost:4000
 ```
 
-## API Summary
+### API summary
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/health` | Check API/database health |
+| GET | `/api/health` | API/database health |
 | GET | `/api/movies` | Discover movies |
 | GET | `/api/movies/search` | Search movies |
-| GET | `/api/movies/:id` | Get movie details |
+| GET | `/api/movies/:id` | Movie details |
 | GET | `/api/wishlist` | Get wishlist |
 | POST | `/api/wishlist` | Add movie |
 | DELETE | `/api/wishlist/:movieId` | Remove movie |
 
-## Health Check
+### Health
 
 ```http
 GET /api/health
 ```
 
-Example:
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "ok",
-    "service": "CineScope API",
-    "database": "connected"
-  }
-}
-```
-
-## Movie Discovery
+### Discovery
 
 ```http
 GET /api/movies
 ```
 
-Pagination:
+With pagination:
 
 ```http
 GET /api/movies?page=1
 ```
 
-Year filter:
+With year filtering:
 
 ```http
 GET /api/movies?page=1&year=2024
 ```
 
-Genre filter:
-
-```http
-GET /api/movies?page=1&genre=28
-```
-
-## Movie Search
+### Search
 
 ```http
 GET /api/movies/search?q=batman&page=1
 ```
 
-## Movie Details
-
-```http
-GET /api/movies/:id
-```
-
-Example:
+### Details
 
 ```http
 GET /api/movies/414906
 ```
 
-## Get Wishlist
+### Wishlist
 
 ```http
 GET /api/wishlist
 ```
 
-## Add Wishlist Movie
-
 ```http
 POST /api/wishlist
 ```
 
-## Remove Wishlist Movie
-
 ```http
-DELETE /api/wishlist/:movieId
+DELETE /api/wishlist/414906
 ```
 
 ---
 
-# 15. Request Flows
+## 10. Wishlist Design
 
-## Movie Discovery
+The assignment did not require authentication, so the current implementation uses a simple default-user model.
 
-```text
-User
- |
- v
-React Home
- |
- v
-GET /api/movies
- |
- v
-Route
- |
- v
-Controller
- |
- v
-Movie Service
- |
- v
-TMDB Client
- |
- v
-TMDB API
- |
- v
-Normalize Results
- |
- v
-Movie Grid
-```
-
-## Search
+### Add
 
 ```text
-User enters "Batman"
- |
- v
-SearchBar
- |
- v
-Frontend API Client
- |
- v
-GET /api/movies/search
- |
- v
-Movie Controller
- |
- v
-Movie Service
- |
- v
-TMDB Client
- |
- v
-TMDB Search API
- |
- v
-Normalized Results
- |
- v
-Movie Grid
-```
-
-## Movie Details
-
-```text
-User clicks movie
- |
- v
-/movies/:id
- |
- v
-GET /api/movies/:id
- |
- v
-Backend
- |
- v
-TMDB
- |
- v
-Normalized Movie
- |
- v
-Movie Details Page
-```
-
-## Wishlist
-
-```text
-User
- |
- v
-React
+Movie
  |
  v
 POST /api/wishlist
- |
- v
-Backend
  |
  v
 Wishlist Service
  |
  v
 PostgreSQL
+```
+
+### Remove
+
+```text
+Movie
  |
  v
-Persistent Wishlist
+DELETE /api/wishlist/:movieId
+ |
+ v
+Wishlist Service
+ |
+ v
+PostgreSQL
 ```
+
+### Duplicate prevention
+
+The backend checks whether a movie already exists for the current user.
+
+```text
+Movie not saved
+      |
+      v
+Add Movie
+
+Movie already saved
+      |
+      v
+Do not create duplicate
+```
+
+The UI also reflects the current wishlist state, allowing the user to remove an already-saved movie.
 
 ---
 
-# 16. Error Handling and Reliability
+## 11. Reliability and Error Handling
 
-The application handles failures at both backend and frontend levels.
+The application handles failures from the external movie service and backend.
 
-## TMDB Failure
+### External API failure
 
 ```text
 TMDB Request
      |
      +---- Success ------> Return Data
      |
-     +---- Failure
+     +---- Transient Failure
              |
              v
-       Retry if transient
+           Retry
              |
              v
-       Return Error
+        Final Response
              |
              v
        Frontend Error State
 ```
 
-## Slow External Service
+### Timeout
+
+External requests have timeout protection so that a slow TMDB response does not keep a backend request open indefinitely.
 
 ```text
 Backend
@@ -846,163 +645,186 @@ Backend
    v
 TMDB Request
    |
-   +---- Fast Response ---> Success
+   +---- Response ---> Success
    |
-   +---- Slow Response ---> Timeout
-                              |
-                              v
-                             Error
+   +---- Timeout ----> Error Response
 ```
 
-## Empty Search
+### Retry
 
-```text
-Search
-  |
-  v
-TMDB
-  |
-  v
-No Results
-  |
-  v
-Backend
-  |
-  v
-Empty Result
-  |
-  v
-Frontend Empty State
-```
+The TMDB client performs limited retries for appropriate transient failures.
+
+The strategy avoids retrying permanent client errors such as invalid requests or authentication failures.
+
+Retries are intentionally limited to avoid excessive external API traffic.
+
+### Wishlist fallback
+
+When retrieving wishlist movie details, failure of one external movie request should not make the entire wishlist unusable. Stored database information can be used as fallback data where available.
 
 ---
 
-# 17. Retry Strategy
+## 12. UI States and Responsive Design
 
-The TMDB client implements limited retries for appropriate transient failures.
+The application handles the major UI states required for a usable application.
 
-```text
-Request
-  |
-  +---- Success ------> Return
-  |
-  +---- Transient Failure
-              |
-              v
-            Retry
-              |
-              v
-            Retry
-              |
-              v
-        Final Response/Error
-```
+### Loading
 
-Permanent client errors are not repeatedly retried.
+Loading skeletons are displayed while movie data is being retrieved.
 
-The retry strategy is intentionally limited to avoid uncontrolled request amplification.
+### Empty
 
----
+An empty state is displayed when a search or filtered request returns no results.
 
-# 18. Timeout Handling
+### Error
 
-External API requests use timeout protection.
+An error state is displayed when an API request fails, with retry behavior where appropriate.
 
-The purpose is to prevent an unavailable or slow external service from keeping backend requests open indefinitely.
-
-```text
-Backend
-   |
-   v
-TMDB Request
-   |
-   +---- Fast ---> Success
-   |
-   +---- Slow ---> Timeout ---> Error
-```
-
----
-
-# 19. UI State Handling
-
-## Loading
-
-A loading skeleton is displayed while data is being fetched.
-
-## Empty
-
-If a search produces no results, an empty state is displayed.
-
-## Error
-
-If the backend or external API fails, an error state is displayed with retry behavior where appropriate.
-
-## Success
+### Success
 
 Movie cards are displayed after successful data retrieval.
 
----
+### Responsive layout
 
-# 20. Large Result Handling
+The interface supports:
 
-The application uses pagination rather than loading the entire movie catalog into the browser.
+- Desktop
+- Tablet
+- Mobile
 
-```text
-Large Dataset
-     |
-     v
-Pagination
-     |
-     +---- Page 1
-     +---- Page 2
-     +---- Page 3
-     +---- ...
-```
+The movie and wishlist grids adapt to smaller screen sizes.
 
-Benefits:
-
-- Lower network usage
-- Lower browser memory usage
-- Faster rendering
-- Better user experience
-
----
-
-# 21. Responsive Design
-
-The interface supports desktop, tablet, and mobile layouts.
-
-Desktop:
-
-```text
-+------+ +------+ +------+ +------+ +------+
-| M1   | | M2   | | M3   | | M4   | | M5   |
-+------+ +------+ +------+ +------+ +------+
-```
-
-Mobile:
+Example mobile layout:
 
 ```text
 +----------+ +----------+
-|    M1    | |    M2    |
+|   Movie  | |   Movie  |
 +----------+ +----------+
 
 +----------+ +----------+
-|    M3    | |    M4    |
+|   Movie  | |   Movie  |
 +----------+ +----------+
 ```
 
-Responsive behavior includes:
-
-- Movie grid
-- Wishlist grid
-- Mobile spacing
-- Mobile typography
-- Responsive pagination
+Pagination and spacing are also adjusted for mobile screens.
 
 ---
 
-# 22. Technology Stack
+## 13. Requirements and Completion Status
+
+| Requirement | Status |
+|---|---|
+| React frontend | Completed |
+| Node.js backend | Completed |
+| Express REST API | Completed |
+| TMDB integration | Completed |
+| Backend API abstraction | Completed |
+| Movie discovery | Completed |
+| Movie search | Completed |
+| Genre filtering | Completed |
+| Year filtering | Completed |
+| Sorting | Completed |
+| Pagination | Completed |
+| Movie details | Completed |
+| Wishlist | Completed |
+| Persistent wishlist | Completed |
+| Duplicate prevention | Completed |
+| Navigation | Completed |
+| Loading states | Completed |
+| Empty states | Completed |
+| Error states | Completed |
+| Responsive design | Completed |
+| PostgreSQL | Completed |
+| Docker Compose database | Completed |
+| Timeout handling | Completed |
+| Transient retry handling | Completed |
+| Documentation | Completed |
+
+---
+
+## 14. Features
+
+### Movie Discovery
+
+Users can browse movies retrieved through the backend.
+
+Movie cards display:
+
+- Poster
+- Title
+- Release year
+- Rating
+- Vote count where available
+
+### Search
+
+Users can search for movies by title.
+
+Example:
+
+```text
+Batman
+```
+
+Backend request:
+
+```http
+GET /api/movies/search?q=batman&page=1
+```
+
+### Filtering
+
+Movies can be filtered by:
+
+- Genre
+- Release year
+
+### Sorting
+
+Results can be sorted using supported movie attributes such as:
+
+- Rating
+- Release date
+- Popularity
+
+### Pagination
+
+Movie results are paginated rather than loading a large result set into the browser at once.
+
+### Movie Details
+
+Users can view:
+
+- Title
+- Poster
+- Backdrop
+- Overview
+- Release date
+- Rating
+- Vote count
+
+### Wishlist
+
+Users can:
+
+- Add movies
+- Remove movies
+- View saved movies
+- Persist wishlist data
+- Prevent duplicate entries
+
+### Navigation
+
+The application provides navigation between:
+
+- Discover
+- Search
+- Movie Details
+- Wishlist
+
+---
+
+## 15. Technology Stack
 
 | Layer | Technology |
 |---|---|
@@ -1018,7 +840,7 @@ Responsive behavior includes:
 
 ---
 
-# 23. Project Structure
+## 16. Project Structure
 
 ```text
 CineScope/
@@ -1062,7 +884,7 @@ CineScope/
 
 ---
 
-# 24. Docker Setup
+## 17. Docker and Environment Configuration
 
 PostgreSQL runs through Docker Compose.
 
@@ -1080,27 +902,15 @@ PostgreSQL runs through Docker Compose.
 +--------------------------------------+
 ```
 
-PostgreSQL image:
+PostgreSQL uses:
 
 ```text
 postgres:16-alpine
 ```
 
-Local database port:
+The local PostgreSQL port is configured through Docker Compose.
 
-```text
-5433
-```
-
-Container PostgreSQL port:
-
-```text
-5432
-```
-
----
-
-# 25. Environment Configuration
+### Environment variables
 
 Create:
 
@@ -1118,13 +928,7 @@ TMDB_ACCESS_TOKEN=your_tmdb_access_token
 TMDB_BASE_URL=https://api.themoviedb.org/3
 ```
 
-The actual TMDB access token must remain local.
-
-Do not commit:
-
-```text
-backend/.env
-```
+The actual TMDB access token must never be committed to Git.
 
 The repository contains:
 
@@ -1132,15 +936,13 @@ The repository contains:
 backend/.env.example
 ```
 
-instead.
-
-The root `.gitignore` also excludes environment files and dependencies.
+The `.gitignore` excludes environment files, dependencies, build output, and local files.
 
 ---
 
-# 26. Local Development Setup
+## 18. Running Locally
 
-## Prerequisites
+### Prerequisites
 
 Install:
 
@@ -1152,14 +954,14 @@ Install:
 
 PostgreSQL does not need to be installed directly because it runs through Docker.
 
-## Clone Repository
+### Clone
 
 ```bash
 git clone https://github.com/NithinBrammesh/CineScope.git
 cd CineScope
 ```
 
-## Start PostgreSQL
+### Start PostgreSQL
 
 ```bash
 docker compose up -d
@@ -1171,30 +973,11 @@ Verify:
 docker ps
 ```
 
-## Backend
+### Start backend
 
 ```bash
 cd backend
 npm install
-```
-
-Create:
-
-```text
-backend/.env
-```
-
-using:
-
-```text
-backend/.env.example
-```
-
-Add the TMDB access token.
-
-Start the backend:
-
-```bash
 npm run dev
 ```
 
@@ -1210,7 +993,7 @@ Health endpoint:
 http://localhost:4000/api/health
 ```
 
-## Frontend
+### Start frontend
 
 Open another terminal:
 
@@ -1220,85 +1003,84 @@ npm install
 npm run dev
 ```
 
+The Vite development server will provide the frontend URL.
+
 ---
 
-# 27. Frontend → Backend Proxy
+## 19. Frontend Proxy and API Communication
 
-During local development:
+During local development, the frontend uses the Vite development server while API requests are forwarded to the Express backend.
 
 ```text
 Browser
    |
    v
-Vite Dev Server
+Vite
 localhost:5173
    |
    | /api/*
    v
-Express Backend
+Express
 localhost:4000
 ```
 
-This allows frontend API requests to be routed through the CineScope backend.
+This allows the frontend to use relative backend API paths without directly exposing TMDB.
 
----
+The frontend API client is responsible for communicating with:
 
-# 28. Production Build
-
-Build the frontend:
-
-```bash
-npm run build
+```text
+/api/movies
+/api/movies/search
+/api/movies/:id
+/api/wishlist
 ```
 
-The frontend production build was successfully validated during development.
-
 ---
 
-# 29. Testing and Verification
+## 20. Testing and Verification
 
-The application was manually tested against the main assignment requirements.
+The main application flows were manually verified.
 
-## Backend
+### Backend
 
-- [x] Server starts successfully
-- [x] PostgreSQL connection works
-- [x] Health endpoint works
-- [x] TMDB connectivity works
-- [x] Movie discovery works
-- [x] Search works
-- [x] Genre filtering works
-- [x] Year filtering works
-- [x] Sorting works
-- [x] Pagination works
-- [x] Movie details work
-- [x] Wishlist API works
-- [x] Wishlist persistence works
-- [x] Wishlist removal works
-- [x] Duplicate prevention works
-- [x] Timeout handling works
-- [x] Transient retry handling works
+- Server starts successfully
+- PostgreSQL connection works
+- Health endpoint works
+- TMDB connectivity works
+- Movie discovery works
+- Search works
+- Genre filtering works
+- Year filtering works
+- Sorting works
+- Pagination works
+- Movie details work
+- Wishlist API works
+- Wishlist persistence works
+- Wishlist removal works
+- Duplicate prevention works
+- Timeout handling is implemented
+- Transient retry handling is implemented
 
-## Frontend
+### Frontend
 
-- [x] Movie discovery loads
-- [x] Search works
-- [x] Empty search state works
-- [x] Genre filter works
-- [x] Year filter works
-- [x] Sorting works
-- [x] Pagination works
-- [x] Movie details page works
-- [x] Add to wishlist works
-- [x] Remove from wishlist works
-- [x] Wishlist page works
-- [x] Wishlist persists after backend restart
-- [x] Loading state works
-- [x] Error state works
-- [x] Responsive layout works
-- [x] Mobile layout verified
+- Movie discovery loads
+- Search works
+- Empty search state works
+- Genre filter works
+- Year filter works
+- Sorting works
+- Pagination works
+- Movie details page works
+- Add to wishlist works
+- Remove from wishlist works
+- Wishlist page works
+- Wishlist persists after backend restart
+- Loading state works
+- Error state works
+- Responsive layout works
+- Mobile layout was verified
 
-### Code Validation
+### Code validation
 
 Backend syntax checks:
 
@@ -1317,85 +1099,61 @@ npm run build
 
 ---
 
-# 30. Engineering Decisions
+## 21. Engineering Decisions
 
-## Backend API Abstraction
+### REST API
 
-**Decision:** The frontend communicates only with CineScope backend endpoints.
+REST was selected because the application has straightforward movie and wishlist resources.
 
-**Reason:** Keeps TMDB credentials private and prevents frontend coupling to the external provider.
+### Modular monolith
 
-## Modular Monolith
+A modular monolith keeps the project simple while still separating responsibilities.
 
-**Decision:** Use one Node.js backend with clear modules.
+### PostgreSQL
 
-**Reason:** The current application does not require the operational complexity of microservices.
+PostgreSQL provides reliable persistence for wishlist data.
 
-## PostgreSQL
+### Backend API abstraction
 
-**Decision:** Use PostgreSQL for wishlist persistence.
+TMDB access is isolated from the frontend.
 
-**Reason:** Wishlist data must survive application and backend restarts.
+### Normalized movie model
 
-## REST
+The backend converts external TMDB responses into a stable CineScope movie model.
 
-**Decision:** Use REST/JSON.
+### Limited retries
 
-**Reason:** The application has straightforward resources and operations that fit REST naturally.
+Only appropriate transient failures are retried.
 
-## Normalized Movie Model
+### Default user
 
-**Decision:** Normalize TMDB responses before returning them.
-
-**Reason:** The frontend should depend on the application's API contract instead of TMDB's raw response structure.
-
-## Limited Retry
-
-**Decision:** Retry only appropriate transient failures.
-
-**Reason:** Temporary failures may recover, while permanent client errors should not be repeatedly retried.
-
-## Default User
-
-**Decision:** Use a default-user model.
-
-**Reason:** Authentication was outside the assignment scope.
-
----
-
-# 31. Performance Considerations
-
-The application considers several performance concerns.
+A default-user model is used because authentication was outside the assignment scope.
 
 ### Pagination
 
-Only the requested result page is loaded.
-
-### Backend Abstraction
-
-External API communication is centralized.
-
-### Normalized Responses
-
-The frontend receives only the required application-level movie model.
-
-### Retry Limits
-
-Retries are limited to prevent request amplification.
-
-### Persistent Storage
-
-Wishlist data is stored in PostgreSQL.
+Pagination prevents unnecessarily large result sets from being rendered in the browser.
 
 ---
 
-# 32. Caching Strategy
+## 22. Performance, Scalability and Security
 
-Repeated movie discovery and search requests can create unnecessary calls to TMDB.
+### Performance
 
-The project contains a cache module where caching can be introduced.
+The application uses:
 
-A future production implementation could use Redis:
+- Pagination
+- Normalized responses
+- Limited external retries
+- Persistent database storage
+- Responsive rendering
+
+### Caching
+
+Repeated movie requests can benefit from server-side caching.
+
+A cache layer is present in the project structure and can be extended with Redis for production use.
+
+A future caching flow could be:
 
 ```text
 Request
@@ -1403,7 +1161,7 @@ Request
   v
 Cache
   |
-  +---- HIT ------> Cached Result
+  +---- HIT ------> Return Cached Data
   |
   +---- MISS
           |
@@ -1411,39 +1169,15 @@ Cache
         TMDB
           |
           v
-       Store Cache
+      Store Cache
           |
           v
-       Return Result
+       Return Data
 ```
 
-Potential cache policies:
+### Scalability
 
-- Short TTL for search results
-- Longer TTL for movie details
-- Cache keys based on query/filter/page
-- Request deduplication
-
-A distributed cache is not required for the current assignment implementation.
-
----
-
-# 33. Scalability Considerations
-
-### Current
-
-```text
-React
-  |
-  v
-Node/Express
-  |
-  +---- PostgreSQL
-  |
-  +---- TMDB
-```
-
-### Possible Future
+The current design can evolve toward:
 
 ```text
                          Load Balancer
@@ -1464,40 +1198,19 @@ Node/Express
                   TMDB API
 ```
 
-Future improvements could include:
+Possible future infrastructure includes:
 
 - Multiple backend instances
 - Redis
 - CDN
 - Rate limiting
-- Authentication
 - Background jobs
 - Monitoring
 - Centralized logging
 
-The current architecture is intentionally simpler because the application does not yet require distributed infrastructure.
+### Security
 
----
-
-# 34. Rate Limit Considerations
-
-TMDB is an external dependency and may impose API usage limits.
-
-Production improvements could include:
-
-- Server-side caching
-- Request deduplication
-- Rate limiting
-- Exponential backoff
-- External API usage monitoring
-
-Because TMDB communication is centralized in the backend, these improvements can be added without changing the frontend API contract.
-
----
-
-# 35. Security Considerations
-
-The TMDB access token is stored on the backend.
+The TMDB access token remains on the backend.
 
 ```text
 React
@@ -1510,105 +1223,67 @@ React
   v
 Backend
   |
-  | Authorization Token
+  | Secret token
   v
 TMDB
 ```
 
-The real environment file is excluded from Git.
-
-This prevents the external API credential from being exposed in the repository or browser.
+Environment files are excluded from Git.
 
 ---
 
-# 36. Maintainability
+## 23. Limitations and Future Improvements
 
-The backend follows:
+### Current limitations
 
-```text
-Route
-  ↓
-Controller
-  ↓
-Service
-  ↓
-Database / External Client
-```
-
-This keeps responsibilities separated.
-
-Examples:
-
-- Routes handle HTTP paths.
-- Controllers handle requests/responses.
-- Services contain business logic.
-- The database layer handles persistence.
-- The TMDB client handles external API communication.
-
-This structure makes future modifications easier.
-
-For example, changing the external movie provider would primarily affect the integration layer rather than the entire application.
-
----
-
-# 37. Limitations
-
-The current implementation intentionally has several limitations.
-
-### Authentication
+**Authentication**
 
 A complete authentication system is not implemented because it was outside the assignment scope.
 
-### Default User
+**Default user**
 
 The wishlist currently uses a default-user model.
 
-### External Dependency
+**External dependency**
 
-Movie discovery and details depend on TMDB availability.
+Movie discovery and movie details depend on TMDB availability.
 
-### Production Cache
+**Production cache**
 
-A distributed Redis cache is not deployed.
+A distributed Redis cache is not deployed as part of the current assignment.
 
-### Rate Limiting
+**Rate limiting**
 
 Production-level rate limiting can be added.
 
-### Observability
+**Observability**
 
 Centralized logging, metrics, tracing, and alerting are future improvements.
 
-### Production Deployment
+### Future improvements
 
-The project is primarily structured for local development and assignment evaluation.
-
----
-
-# 38. Future Improvements
-
-## Authentication
+#### Authentication
 
 - User registration
 - Login
 - JWT/session authentication
 - User-specific wishlists
 
-## Performance
+#### Performance
 
 - Redis caching
+- Request deduplication
 - Search debouncing
 - Request cancellation
-- Request deduplication
 - CDN
 
-## API Protection
+#### API protection
 
 - Rate limiting
-- Stronger request validation
+- Stronger validation
 - Security headers
 
-## Observability
+#### Observability
 
 - Structured logging
 - Metrics
@@ -1616,31 +1291,30 @@ The project is primarily structured for local development and assignment evaluat
 - Error monitoring
 - Health dashboards
 
-## Deployment
+#### Deployment
 
-- Cloud-hosted PostgreSQL
+- Cloud PostgreSQL
 - Containerized backend
-- Static frontend hosting/CDN
+- Static frontend hosting
 - HTTPS
 - CI/CD
 
 ---
 
-# 39. AI Usage
+## 24. AI Usage and Development Approach
 
 AI-assisted development tools were used during development for:
 
-- Implementation suggestions
-- Boilerplate generation
+- Boilerplate implementation
 - Debugging
 - UI improvements
-- Architecture review
+- Architecture suggestions
 - Error-handling suggestions
 - Documentation assistance
 
-Generated code was reviewed, tested, and integrated into the project.
+AI-generated suggestions were reviewed and tested before being included.
 
-Validation included:
+Validation was performed through:
 
 - Manual application testing
 - API testing
@@ -1649,116 +1323,30 @@ Validation included:
 - Node.js syntax checks
 - Production frontend build
 
-AI was used as a development aid, while the final implementation was reviewed and understood by the developer.
+AI was used as a development aid rather than as a replacement for understanding the implementation.
 
 ---
 
-# 40. Design Principles
+## 25. Submission Checklist and Repository
 
-The project follows these principles:
+### Submission Checklist
 
-### Separation of Concerns
-
-Each layer has a clear responsibility.
-
-### Backend Abstraction
-
-External API implementation is hidden behind the backend.
-
-### Secure Configuration
-
-Secrets remain in environment variables.
-
-### Graceful Failure
-
-External failures are handled using errors, timeouts, limited retries, and fallback data where applicable.
-
-### Pagination
-
-Large result sets are handled incrementally.
-
-### Persistence
-
-Important wishlist data is stored in PostgreSQL.
-
-### Maintainability
-
-Functionality is divided into focused modules.
-
-### Simplicity
-
-Complex infrastructure is introduced only when justified by the requirements.
-
----
-
-# 41. Final Architecture Summary
-
-```text
-                         USER
-                          |
-                          v
-                  +---------------+
-                  | React + Vite  |
-                  |   Frontend    |
-                  +-------+-------+
-                          |
-                       REST/JSON
-                          |
-                          v
-                +-------------------+
-                | Node.js + Express |
-                |     Backend       |
-                +---------+---------+
-                          |
-                +---------+---------+
-                |                   |
-                v                   v
-        +---------------+   +---------------+
-        |   PostgreSQL  |   |   TMDB API    |
-        |               |   |               |
-        |   Wishlist    |   | Movie Data    |
-        +---------------+   +---------------+
-```
-
-The backend acts as the central application layer, providing a stable API contract to the frontend while isolating TMDB integration and database operations.
-
----
-
-# 42. Submission Checklist
-
-Before submission, verify:
-
-- [x] Frontend runs successfully
-- [x] Backend runs successfully
-- [x] PostgreSQL starts through Docker
+- [x] Frontend and backend run successfully
+- [x] PostgreSQL runs through Docker Compose
 - [x] TMDB integration works
-- [x] Search works
-- [x] Filters work
-- [x] Sorting works
-- [x] Pagination works
-- [x] Movie details work
-- [x] Wishlist works
-- [x] Wishlist persists
-- [x] Duplicate wishlist entries are prevented
-- [x] Loading state works
-- [x] Empty state works
-- [x] Error state works
-- [x] Mobile UI works
+- [x] Search, filters, sorting, and pagination work
+- [x] Movie details and wishlist work with persistence
+- [x] Loading, empty, error, and responsive states are handled
 - [x] Production frontend build succeeds
 - [x] Secrets are excluded from Git
 - [x] `.env.example` is included
 - [x] README documentation is included
 
----
+### Repository
 
-# 43. Repository
-
-GitHub repository:
-
+**GitHub:**  
 https://github.com/NithinBrammesh/CineScope
 
----
-
-## Author
+### Author
 
 **Nithin B**
