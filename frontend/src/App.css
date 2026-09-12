@@ -1,0 +1,437 @@
+.app-shell {
+  min-height: 100vh;
+  background: #08111d;
+  color: #ecf6ff;
+  padding: 1.25rem 1.5rem 2rem;
+}
+
+.top-nav {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nav-link {
+  color: #e2e8f0;
+  text-decoration: none;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+}
+
+.home-page,
+.movie-details-page,
+.wishlist-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.topbar {
+  margin-bottom: 1.5rem;
+}
+
+.brand-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: #7dd3fc;
+}
+
+h1 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+
+.toolbar,
+.controls-row,
+.results-header,
+.pagination {
+  margin-bottom: 1.25rem;
+}
+
+.toolbar {
+  margin-top: 1rem;
+}
+
+.search-bar-wrap {
+  width: 100%;
+}
+
+.search-bar,
+.filter-bar select,
+.filter-bar input,
+.sort-selector select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.filter-bar label,
+.sort-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #cbd5e1;
+}
+
+.controls-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  align-items: end;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.movie-card {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 100%;
+  min-width: 0;
+}
+
+.movie-card-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  min-width: 0;
+}
+
+.movie-poster-wrap {
+  height: 290px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.movie-info {
+  padding: 0.9rem;
+  min-width: 0;
+}
+
+.movie-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  min-height: 2.7rem;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.movie-meta,
+.movie-rating {
+  margin: 0.45rem 0 0;
+  color: #cbd5e1;
+}
+
+.movie-hero {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.movie-hero-image {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.75);
+}
+
+.movie-detail-content {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  margin-top: -120px;
+  position: relative;
+  z-index: 1;
+}
+
+.movie-detail-poster {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: #0f172a;
+}
+
+.movie-detail-poster img {
+  width: 100%;
+  display: block;
+}
+
+.movie-detail-body h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.movie-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.wishlist-button,
+.retry-button,
+.pagination button,
+.wishlist-remove-button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.wishlist-button.secondary,
+.wishlist-remove-button {
+  background: #1f2937;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.wishlist-button:disabled,
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wishlist-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.wishlist-section {
+  margin-top: 1rem;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1.5fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.wishlist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.wishlist-remove-button {
+  width: 100%;
+  margin-top: auto;
+}
+
+@media (max-width: 1200px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.loading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.loading-card {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.12), rgba(148, 163, 184, 0.25), rgba(148, 163, 184, 0.12));
+  border-radius: 16px;
+  height: 300px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.state-box {
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.empty-state {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.error-state {
+  background: rgba(127, 29, 29, 0.2);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  color: #fecaca;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+
+@media (max-width: 480px) {
+  .movie-grid,
+  .wishlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .movie-card,
+  .wishlist-item {
+    min-width: 0;
+  }
+
+  .movie-card-link {
+    width: 100%;
+  }
+
+  .movie-poster-wrap {
+    height: clamp(150px, 42vw, 220px);
+  }
+
+  .movie-info {
+    padding: 0.6rem 0.55rem;
+  }
+
+  .movie-info h3 {
+    font-size: 0.82rem;
+    min-height: 2.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .movie-meta,
+  .movie-rating {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .wishlist-remove-button {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.7rem;
+  }
+}
+
+@media (max-width: 720px) {
+ 
+  .app-shell {
+    padding: 0.75rem;
+  }
+
+  .top-nav {
+    margin-bottom: 0.75rem;
+  }
+
+    h1 {
+    font-size: 2rem;
+  }
+
+  .search-bar,
+  .filter-bar select,
+  .filter-bar input,
+  .sort-selector select {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .filter-bar label,
+  .sort-selector {
+    gap: 0.35rem;
+  }
+
+
+  .topbar {
+    margin-bottom: 0.9rem;
+  }
+
+  .toolbar {
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .controls-row {
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+  .controls-row,
+  .filter-bar,
+  .movie-detail-content {
+    grid-template-columns: 1fr;
+  }
+
+.pagination {
+
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  margin: 1rem;
+}
+
+.pagination button {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.pagination span {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+  .top-nav {
+    justify-content: center;
+  }
+}

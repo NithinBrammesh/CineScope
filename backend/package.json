@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node --watch src/app.js",
+    "start": "NODE_OPTIONS=--dns-result-order=ipv4first node src/app.js",
+    "lint": "node --check src/app.js && node --check src/config/env.js && node --check src/db/connection.js && node --check src/services/healthService.js && node --check src/routes/healthRoutes.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0"
+  }
+}
