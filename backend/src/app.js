@@ -7,7 +7,14 @@ import wishlistRoutes from './routes/wishlistRoutes.js'
 
 const app = express()
 
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173',
+      'https://cinescope-web.netlify.app',
+    ],
+  })
+)
 app.use(express.json())
 
 app.use('/api', healthRoutes)
