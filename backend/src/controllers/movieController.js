@@ -22,8 +22,8 @@ export async function getMoviesController(req, res, next) {
 
 export async function searchMoviesController(req, res, next) {
   try {
-    const { q, page } = req.query
-    const result = await searchMovieList({ q, page })
+    const { q, page, genre, year, sort } = req.query
+    const result = await searchMovieList({ q, page, genre, year, sort })
 
     res.status(200).json({
       success: true,

@@ -161,19 +161,108 @@ export async function discoverMovies({ page = 1, genre, year, sort = 'popularity
   return requestTmdb('/discover/movie', query)
 }
 
-export async function searchMovies({ q = '', page = 1 } = {}) {
+function getSortValue(sortValue) {
+  const value = String(sortValue || 'popularity.desc').trim()
+  return value || 'popularity.desc'
+}
+
+function applyLocalSearchSorting(items, sortValue) {
+  const sortKey = getSortValue(sortValue)
+  const direction = sortKey.endsWith('.asc') ? 1 : -1
+  const key = sortKey.replace(/\.(asc|desc)$/, '')
+
+  return [...items].sort((left, right) => {
+    let leftValue = Number(left?.popularity) || 0
+    let rightValue = Number(right?.popularity) || 0
+
+    if (key === 'vote_average') {
+      leftValue = Number(left?.vote_average) || 0
+      rightValue = Number(right?.vote_average) || 0
+    }
+
+    if (key === 'primary_release_date') {
+      leftValue = new Date(left?.release_date || '1900-01-01').getTime()
+      rightValue = new Date(right?.release_date || '1900-01-01').getTime()
+    }
+
+    return (leftValue - rightValue) * direction
+  })
+}
+
+export async function searchMovies({ q = '', page = 1, genre, year, sort } = {}) {
   const query = String(q || '').trim()
 
   if (!query) {
     throw withStatus('Search query is required.', 400)
   }
 
-  return requestTmdb('/search/movie', {
+  const safePage = Number(page) || 1
+  const normalizedGenre = genre ? String(genre).trim().toLowerCase() : ''
+  const genreId = normalizedGenre ? genreMap[normalizedGenre] : undefined
+  const normalizedYear = year ? Number(year) : null
+  const filteredByYear = Number.isFinite(normalizedYear) && normalizedYear >= 1900
+  const sortValue = getSortValue(sort)
+
+  const searchParams = {
     query,
-    page: Number(page) || 1,
+    page: safePage,
     include_adult: false,
     language: 'en-US',
-  })
+  }
+
+  if (filteredByYear) {
+    searchParams.primary_release_year = normalizedYear
+  }
+
+  const firstPage = await requestTmdb('/search/movie', searchParams)
+
+  const needsLocalFallback = Boolean(genreId || sortValue !== 'popularity.desc')
+  if (!needsLocalFallback) {
+    return firstPage
+  }
+
+  const maxPages = Math.min(10, Number(firstPage?.total_pages) || 1)
+  const matches = []
+
+  for (let currentPage = 1; currentPage <= maxPages; currentPage += 1) {
+    const pagePayload = currentPage === 1 ? firstPage : await requestTmdb('/search/movie', { ...searchParams, page: currentPage })
+    const results = Array.isArray(pagePayload?.results) ? pagePayload.results : []
+
+    for (const movie of results) {
+      if (genreId && !(movie?.genre_ids || []).includes(genreId)) {
+        continue
+      }
+
+      if (filteredByYear && String(movie?.release_date || '').slice(0, 4) !== String(normalizedYear)) {
+        continue
+      }
+
+      matches.push(movie)
+
+      if (matches.length >= safePage * 20 + 20) {
+        break
+      }
+    }
+
+    if (matches.length >= safePage * 20 + 20) {
+      break
+    }
+  }
+
+  let filtered = sortValue !== 'popularity.desc' ? applyLocalSearchSorting(matches, sortValue) : matches
+
+  const totalResults = filtered.length
+  const totalPages = Math.max(1, Math.ceil(totalResults / 20))
+  const startIndex = (safePage - 1) * 20
+  const pageResults = filtered.slice(startIndex, startIndex + 20)
+
+  return {
+    ...firstPage,
+    results: pageResults,
+    total_pages: totalPages,
+    total_results: totalResults,
+    page: safePage,
+  }
 }
 
 export async function getMovieById(movieId) {

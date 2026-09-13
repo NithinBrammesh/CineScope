@@ -63,7 +63,7 @@ function Home() {
       setLoading(true)
       setError('')
 
-      searchMovies(query, page, controller.signal)
+      searchMovies(query, page, controller.signal, { genre, year, sort })
         .then((payload) => {
           setMovies(payload?.movies || [])
           setPagination(payload?.pagination || { page: 1, totalPages: 1, totalResults: 0 })
@@ -104,7 +104,13 @@ function Home() {
       </header>
 
       <section className="toolbar">
-        <SearchBar value={query} onChange={setQuery} />
+        <SearchBar
+          value={query}
+          onChange={(value) => {
+            setQuery(value)
+            setPage(1)
+          }}
+        />
       </section>
 
       <section className="controls-row">

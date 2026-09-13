@@ -37,14 +37,19 @@ export async function getMovies({ page = 1, genre = '', year = '', sort = 'popul
   }
 }
 
-export async function searchMovies(query, page = 1, signal) {
+export async function searchMovies(query, page = 1, signal, filters = {}) {
   const trimmedQuery = String(query || '').trim()
 
   if (!trimmedQuery) {
     throw new Error('Search query is required.')
   }
 
-  const params = new URLSearchParams({ q: trimmedQuery, page: String(page) })
+  const { genre = '', year = '', sort = 'popularity.desc' } = filters
+  const params = new URLSearchParams({ q: trimmedQuery, page: String(page), sort })
+
+  if (genre) params.set('genre', genre)
+  if (year) params.set('year', String(year))
+
   const response = await fetch(`${API_BASE}/movies/search?${params.toString()}`, {
     signal,
   })

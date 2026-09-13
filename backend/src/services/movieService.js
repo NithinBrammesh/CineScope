@@ -50,7 +50,7 @@ export async function getMovies({ page = 1, genre, year, sort } = {}) {
   return normalizePageResponse(payload, { page: safePage })
 }
 
-export async function searchMovieList({ q, page = 1 } = {}) {
+export async function searchMovieList({ q, page = 1, genre, year, sort } = {}) {
   const query = String(q || '').trim()
 
   if (!query) {
@@ -67,7 +67,7 @@ export async function searchMovieList({ q, page = 1 } = {}) {
     throw error
   }
 
-  const payload = await searchMovies({ q: query, page: safePage })
+  const payload = await searchMovies({ q: query, page: safePage, genre, year, sort })
   return normalizePageResponse(payload, { page: safePage })
 }
 
