@@ -471,6 +471,7 @@ The backend exposes an application-level movie object:
 }
 ```
 The frontend therefore depends on CineScope's model instead of TMDB's raw response structure.
+
 ---
 
 ### Provider Isolation
@@ -655,6 +656,7 @@ Movie already saved
 Do not create duplicate
 ```
 The UI also reflects the current wishlist state, allowing the user to remove an already-saved movie.
+
 ---
 
 ### Persistence Behavior
@@ -709,6 +711,7 @@ The strategy avoids retrying permanent client errors such as invalid requests or
 Retries are intentionally limited to avoid excessive external API traffic.
 ### Wishlist fallback
 When retrieving wishlist movie details, failure of one external movie request should not make the entire wishlist unusable. Stored database information can be used as fallback data where available.
+
 ---
 
 ### Failure Boundaries
@@ -1012,6 +1015,7 @@ The repository contains:
 backend/.env.example
 ```
 The `.gitignore` excludes environment files, dependencies, build output, and local files.
+
 ---
 
 ### Environment Safety
@@ -1073,6 +1077,7 @@ npm install
 npm run dev
 ```
 The Vite development server will provide the frontend URL.
+
 ---
 
 ### Local Startup Order
@@ -1210,6 +1215,7 @@ Only appropriate transient failures are retried.
 A default-user model is used because authentication was outside the assignment scope.
 ### Pagination
 Pagination prevents unnecessarily large result sets from being rendered in the browser.
+
 ---
 
 ### Practical Trade-offs
