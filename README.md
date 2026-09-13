@@ -1,6 +1,8 @@
 # CineScope — Movie Discovery & Wishlist Platform
 CineScope is a full-stack movie discovery application built with **React, Node.js, Express, PostgreSQL, Docker Compose, and the TMDB API**.
+
 The application allows users to discover movies, search for movies, filter and sort results, view movie details, and maintain a persistent wishlist.
+
 The project uses a **modular monolith architecture**. The React frontend communicates only with the CineScope backend. The backend handles TMDB communication and PostgreSQL persistence.
 ---
 ### Quick Links
