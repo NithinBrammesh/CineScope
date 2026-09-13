@@ -49,6 +49,7 @@ Node.js + Express
 PostgreSQL    TMDB API
 ```
 The frontend never communicates directly with TMDB.
+
 ---
 
 ### Scope
@@ -173,6 +174,7 @@ Normalized Response
 HTTP Response
 ```
 This structure keeps HTTP handling, business logic, persistence, and external API integration separate.
+
 ---
 
 ### Module Interaction
