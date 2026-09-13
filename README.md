@@ -240,6 +240,7 @@ Handles communication with the external movie API.
 Handles PostgreSQL connectivity and persistence.
 **Middleware**
 Provides shared validation and error-handling behavior.
+
 ---
 
 ### Backend Maintainability
