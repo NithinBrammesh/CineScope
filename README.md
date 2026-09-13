@@ -13,6 +13,7 @@ The project uses a **modular monolith architecture**. The React frontend communi
 - **Backend Health:** https://cinescope-api-5mjg.onrender.com/api/health
 - **Loom Demo Video:** https://www.loom.com/share/23bf34e0174e4f99a87f88880a2ad245
 - **Mobile Responsive View:** https://drive.google.com/file/d/1tptvVkxkAZB6O52Avrhntb0uIenA8hGm/view
+- **Technical Documentation:** [Project Documentation](https://drive.google.com/file/d/1ks1cJrRkbmLCqkvdQ1PPjKGKk88dRwiw/view)
 
 ---
 
