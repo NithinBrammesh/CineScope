@@ -11,7 +11,6 @@ The project uses a **modular monolith architecture**. The React frontend communi
 - **Live Frontend:** https://cinescope-web.netlify.app
 - **Backend API:** https://cinescope-api-5mjg.onrender.com
 - **Backend Health:** https://cinescope-api-5mjg.onrender.com/api/health
-- **GitHub Repository:** https://github.com/NithinBrammesh/CineScope
 - **Loom Demo Video:** https://www.loom.com/share/23bf34e0174e4f99a87f88880a2ad245
 - **Mobile Responsive View:** https://drive.google.com/file/d/1tptvVkxkAZB6O52Avrhntb0uIenA8hGm/view
 
